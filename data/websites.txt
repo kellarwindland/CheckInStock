@@ -1,2 +1,8 @@
-NewEgg
+NewEgg, 3090
+https://www.newegg.com/p/pl?d=rtx+3090&N=8000%20601357282%20100007709
+NewEgg, 3080
 https://www.newegg.com/p/pl?d=RTX+3080&N=8000%20601357282%20100007709
+MicroCenter, 3080
+https://www.microcenter.com/search/search_results.aspx?Ntt=GeForce+RTX+3080&Ntk=all&sortby=match&N=4294966937+4294822454&myStore=false
+MicroCenter, 3090
+https://www.microcenter.com/search/search_results.aspx?Ntt=GeForce+RTX+3090&Ntk=all&sortby=match&N=4294822454+4294966937&myStore=false
