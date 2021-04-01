@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CheckInStock:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CheckInStock_jar</output-path>
+    <root id="archive" name="CheckInStock.jar">
+      <element id="module-output" name="CheckInStock" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jars/activation.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jars/jsoup-1.13.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../jars/mail.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

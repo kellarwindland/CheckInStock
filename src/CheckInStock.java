@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import org.jsoup.Jsoup;
@@ -19,7 +16,7 @@ import javax.mail.internet.MimeMessage;
 public class CheckInStock {
 
     private Map<String, Document> docs;
-    private FileWriter myWriter;
+    //private FileWriter myWriter;
 
     private String host = "smtp.gmail.com";
 
@@ -33,7 +30,7 @@ public class CheckInStock {
 
         CheckInStock checkInStock = new CheckInStock();
         checkInStock.checkStock();
-        checkInStock.close();
+//        checkInStock.close();
 
         if(checkInStock.check) {
             checkInStock.sendEmail();
@@ -46,19 +43,24 @@ public class CheckInStock {
     private CheckInStock() throws IOException {
         docs = new HashMap<>();
 
+        InputStream input = CheckInStock.class.getResourceAsStream("data/websites.txt");
+
+
         File newFile = new File("data/websites.txt");
-        Scanner program = new Scanner(newFile);
+        Scanner program = new Scanner(input);
 
         while(program.hasNextLine()){
             docs.put(program.nextLine(), Jsoup.connect(program.nextLine()).timeout(6000).get());
         }
 
-        myWriter = new FileWriter("F:\\CheckInStock\\data\\result.txt");
+        //myWriter = new FileWriter("src/data/result.txt");
     }
 
     private void sendEmail() throws FileNotFoundException {
-        File newFile = new File("data/email.txt");
-        Scanner program = new Scanner(newFile);
+        InputStream input1 = CheckInStock.class.getResourceAsStream("data/email.txt");
+
+        //File newFile = new File("src/data/email.txt");
+        Scanner program = new Scanner(input1);
 
         String username = program.nextLine().trim();
         String password = program.nextLine().trim();
@@ -98,18 +100,18 @@ public class CheckInStock {
         }
     }
 
-    private void close() throws IOException {
-        myWriter.close();
-    }
+//    private void close() throws IOException {
+//        myWriter.close();
+//    }
 
     private void checkStock() throws IOException {
 
         for(Map.Entry<String,Document> entry : docs.entrySet()){
             System.out.println(entry.getKey());
-            myWriter.write(entry.getKey() + "\n");
+//            myWriter.write(entry.getKey() + "\n");
             body += entry.getKey() + "\n";
             System.out.println();
-            myWriter.write("\n");
+//            myWriter.write("\n");
             body += "\n";
             if(entry.getKey().startsWith("NewEgg")){
                 checkNewEgg(entry.getValue());
@@ -128,22 +130,22 @@ public class CheckInStock {
             for(Element item : elements){
 
                 System.out.println(item.select("div.pDescription.compressedNormal2").text());
-                myWriter.write(item.select("div.pDescription.compressedNormal2").text() + "\n");
+//                myWriter.write(item.select("div.pDescription.compressedNormal2").text() + "\n");
                 body += item.select("div.pDescription.compressedNormal2").text() + "\n";
 
                 if(item.select("div.stock").text().startsWith("Usually ships in")){
                     System.out.println("ORDER NOW");
-                    myWriter.write("ORDER NOW" + "\n");
+//                    myWriter.write("ORDER NOW" + "\n");
                     body += "ORDER NOW" + "\n";
 
                     check = true;
                 }else{
                     System.out.println("OUT OF STOCK");
-                    myWriter.write("OUT OF STOCK" + "\n");
+//                    myWriter.write("OUT OF STOCK" + "\n");
                     body += "OUT OF STOCK" + "\n";
                 }
                 System.out.println();
-                myWriter.write("\n");
+//                myWriter.write("\n");
                 body += "\n";
             }
         }
@@ -161,24 +163,24 @@ public class CheckInStock {
                 if(!item.isEmpty()){
 
                     System.out.println(item.select("a.item-title").text());
-                    myWriter.write(item.select("a.item-title").text() + "\n");
+//                    myWriter.write(item.select("a.item-title").text() + "\n");
                     body += item.select("a.item-title").text() + "\n";
 
                     Elements promo = item.select("p.item-promo");
 
                     if(!promo.isEmpty()){
                         System.out.println(item.select("p.item-promo").text());
-                        myWriter.write(item.select("p.item-promo").text() + "\n");
+//                        myWriter.write(item.select("p.item-promo").text() + "\n");
                         body += item.select("p.item-promo").text() + "\n";
                     }else{
                         System.out.println("ORDER NOW");
-                        myWriter.write("ORDER NOW" + "\n");
+//                        myWriter.write("ORDER NOW" + "\n");
                         body += "ORDER NOW" + "\n";
 
                         check = true;
                     }
                     System.out.println();
-                    myWriter.write("\n");
+//                    myWriter.write("\n");
                     body += "\n";
                 }
 
