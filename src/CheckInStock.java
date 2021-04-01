@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -20,54 +21,26 @@ public class CheckInStock {
     private Map<String, Document> docs;
     private FileWriter myWriter;
 
-    private String address = "windland.6@buckeyemail.osu.edu";
-    private String host = "smtp.example.com";
+    private String host = "smtp.gmail.com";
+
+    private String body = "";
+
+    private boolean check = false;
+
+    String SUBJECT = "GPU in stock!";
 
     public static void main(String[] args) throws IOException {
 
         CheckInStock checkInStock = new CheckInStock();
         checkInStock.checkStock();
         checkInStock.close();
-        checkInStock.sendEmail();
-    }
 
-    private void sendEmail(){
+        if(checkInStock.check) {
+            checkInStock.sendEmail();
+        }else{
+            System.out.println("None in stock :(");
+        }
 
-            // Get system properties
-            Properties properties = System.getProperties();
-
-            // Setup mail server
-            properties.setProperty("mail.smtp.host", host);
-
-            // Get the default Session object.
-            Session session = Session.getDefaultInstance(properties);
-
-            try {
-                // Create a default MimeMessage object.
-                MimeMessage message = new MimeMessage(session);
-
-                // Set From: header field of the header.
-                message.setFrom(new InternetAddress(address));
-
-                // Set To: header field of the header.
-                message.addRecipient(Message.RecipientType.TO, new InternetAddress(address));
-
-                // Set Subject: header field
-                message.setSubject("This is the Subject Line!");
-
-                // Now set the actual message
-                message.setText("This is actual message");
-
-                // Send message
-                Transport.send(message);
-                System.out.println("Sent message successfully....");
-            } catch (MessagingException mex) {
-                mex.printStackTrace();
-            }
-    }
-
-    private void close() throws IOException {
-        myWriter.close();
     }
 
     private CheckInStock() throws IOException {
@@ -83,13 +56,61 @@ public class CheckInStock {
         myWriter = new FileWriter("F:\\CheckInStock\\data\\result.txt");
     }
 
+    private void sendEmail() throws FileNotFoundException {
+        File newFile = new File("data/email.txt");
+        Scanner program = new Scanner(newFile);
+
+        String username = program.nextLine().trim();
+        String password = program.nextLine().trim();
+        String address = program.nextLine().trim();
+        program.close();
+
+        Properties properties = System.getProperties();
+
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.setProperty("mail.smtp.host", host);
+        properties.put("mail.smtp.user", username);
+        properties.put("mail.smtp.password", password);
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+
+        Session session = Session.getDefaultInstance(properties);
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+
+            message.setFrom(new InternetAddress(username));
+
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(address));
+
+            message.setSubject(SUBJECT);
+
+            message.setText(body);
+
+            Transport transport = session.getTransport("smtp");
+            transport.connect(host, username, password);
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+
+            System.out.println("Sent message successfully....");
+        } catch (MessagingException mex) {
+            mex.printStackTrace();
+        }
+    }
+
+    private void close() throws IOException {
+        myWriter.close();
+    }
+
     private void checkStock() throws IOException {
 
         for(Map.Entry<String,Document> entry : docs.entrySet()){
             System.out.println(entry.getKey());
             myWriter.write(entry.getKey() + "\n");
+            body += entry.getKey() + "\n";
             System.out.println();
             myWriter.write("\n");
+            body += "\n";
             if(entry.getKey().startsWith("NewEgg")){
                 checkNewEgg(entry.getValue());
             }else if(entry.getKey().startsWith("MicroCenter")) {
@@ -108,16 +129,22 @@ public class CheckInStock {
 
                 System.out.println(item.select("div.pDescription.compressedNormal2").text());
                 myWriter.write(item.select("div.pDescription.compressedNormal2").text() + "\n");
+                body += item.select("div.pDescription.compressedNormal2").text() + "\n";
 
                 if(item.select("div.stock").text().startsWith("Usually ships in")){
                     System.out.println("ORDER NOW");
                     myWriter.write("ORDER NOW" + "\n");
+                    body += "ORDER NOW" + "\n";
+
+                    check = true;
                 }else{
                     System.out.println("OUT OF STOCK");
                     myWriter.write("OUT OF STOCK" + "\n");
+                    body += "OUT OF STOCK" + "\n";
                 }
                 System.out.println();
                 myWriter.write("\n");
+                body += "\n";
             }
         }
 
@@ -135,18 +162,24 @@ public class CheckInStock {
 
                     System.out.println(item.select("a.item-title").text());
                     myWriter.write(item.select("a.item-title").text() + "\n");
+                    body += item.select("a.item-title").text() + "\n";
 
                     Elements promo = item.select("p.item-promo");
 
                     if(!promo.isEmpty()){
                         System.out.println(item.select("p.item-promo").text());
                         myWriter.write(item.select("p.item-promo").text() + "\n");
+                        body += item.select("p.item-promo").text() + "\n";
                     }else{
                         System.out.println("ORDER NOW");
-                        myWriter.write("ORDER NOW");
+                        myWriter.write("ORDER NOW" + "\n");
+                        body += "ORDER NOW" + "\n";
+
+                        check = true;
                     }
                     System.out.println();
                     myWriter.write("\n");
+                    body += "\n";
                 }
 
             }
