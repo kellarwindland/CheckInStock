@@ -16,7 +16,6 @@ import javax.mail.internet.MimeMessage;
 public class CheckInStock {
 
     private Map<String, Document> docs;
-    //private FileWriter myWriter;
 
     private String host = "smtp.gmail.com";
 
@@ -30,7 +29,6 @@ public class CheckInStock {
 
         CheckInStock checkInStock = new CheckInStock();
         checkInStock.checkStock();
-//        checkInStock.close();
 
         if(checkInStock.check) {
             checkInStock.sendEmail();
@@ -44,22 +42,17 @@ public class CheckInStock {
         docs = new HashMap<>();
 
         InputStream input = CheckInStock.class.getResourceAsStream("data/websites.txt");
-
-
-        File newFile = new File("data/websites.txt");
         Scanner program = new Scanner(input);
 
         while(program.hasNextLine()){
             docs.put(program.nextLine(), Jsoup.connect(program.nextLine()).timeout(6000).get());
         }
 
-        //myWriter = new FileWriter("src/data/result.txt");
     }
 
-    private void sendEmail() throws FileNotFoundException {
+    private void sendEmail() {
         InputStream input1 = CheckInStock.class.getResourceAsStream("data/email.txt");
 
-        //File newFile = new File("src/data/email.txt");
         Scanner program = new Scanner(input1);
 
         String username = program.nextLine().trim();
@@ -100,29 +93,53 @@ public class CheckInStock {
         }
     }
 
-//    private void close() throws IOException {
-//        myWriter.close();
-//    }
 
-    private void checkStock() throws IOException {
+    private void checkStock() {
 
         for(Map.Entry<String,Document> entry : docs.entrySet()){
             System.out.println(entry.getKey());
-//            myWriter.write(entry.getKey() + "\n");
             body += entry.getKey() + "\n";
             System.out.println();
-//            myWriter.write("\n");
             body += "\n";
             if(entry.getKey().startsWith("NewEgg")){
                 checkNewEgg(entry.getValue());
             }else if(entry.getKey().startsWith("MicroCenter")) {
                 checkMicro(entry.getValue());
+            }else if(entry.getKey().startsWith("Best Buy")) {
+                checkBest(entry.getValue());
             }
         }
 
     }
 
-    public void checkMicro(Document doc) throws IOException {
+    public void checkBest(Document doc) {
+        Elements sections = doc.select("div#main-results").select("ol").select("li.sku-item");
+
+        for(Element element : sections) {
+            System.out.println(element.select("div").select("div").select("div").select("div").select("div").select("div.right-column").select("div.information").select("div:eq(1)").select("div").select("h4").select("a").text());
+            body += element.select("div").select("div").select("div").select("div").select("div").select("div.right-column").select("div.information").select("div:eq(1)").select("div").select("h4").select("a").text() + "\n";
+
+            String stock = element.select("div").select("div").select("div").select("div").select("div").select("div.right-column").select("div.price-block").select("div.sku-list-item-button").select("div").select("div").select("div").select("div").select("div").select("button").text();
+
+            if(stock.equals("Sold Out") || stock.equals("Coming Soon")){
+                stock = "OUT OF STOCK";
+                System.out.println(stock);
+                body += stock + "\n";
+            }else{
+                stock = "ORDER NOW";
+                System.out.println(stock);
+                body += stock + "\n";
+
+                check = true;
+            }
+
+            System.out.println();
+            body += "\n";
+        }
+
+    }
+
+    public void checkMicro(Document doc) {
         Elements sections = doc.select("article#productGrid").select("ul");
 
         for(Element element : sections) {
@@ -130,29 +147,25 @@ public class CheckInStock {
             for(Element item : elements){
 
                 System.out.println(item.select("div.pDescription.compressedNormal2").text());
-//                myWriter.write(item.select("div.pDescription.compressedNormal2").text() + "\n");
                 body += item.select("div.pDescription.compressedNormal2").text() + "\n";
 
                 if(item.select("div.stock").text().startsWith("Usually ships in")){
                     System.out.println("ORDER NOW");
-//                    myWriter.write("ORDER NOW" + "\n");
                     body += "ORDER NOW" + "\n";
 
                     check = true;
                 }else{
                     System.out.println("OUT OF STOCK");
-//                    myWriter.write("OUT OF STOCK" + "\n");
                     body += "OUT OF STOCK" + "\n";
                 }
                 System.out.println();
-//                myWriter.write("\n");
                 body += "\n";
             }
         }
 
     }
 
-    public void checkNewEgg(Document doc) throws IOException {
+    public void checkNewEgg(Document doc) {
 
         Elements sections = doc.select("div.item-cells-wrap.border-cells.items-grid-view.four-cells.expulsion-one-cell");
 
@@ -163,24 +176,20 @@ public class CheckInStock {
                 if(!item.isEmpty()){
 
                     System.out.println(item.select("a.item-title").text());
-//                    myWriter.write(item.select("a.item-title").text() + "\n");
                     body += item.select("a.item-title").text() + "\n";
 
                     Elements promo = item.select("p.item-promo");
 
                     if(!promo.isEmpty()){
                         System.out.println(item.select("p.item-promo").text());
-//                        myWriter.write(item.select("p.item-promo").text() + "\n");
                         body += item.select("p.item-promo").text() + "\n";
                     }else{
                         System.out.println("ORDER NOW");
-//                        myWriter.write("ORDER NOW" + "\n");
                         body += "ORDER NOW" + "\n";
 
                         check = true;
                     }
                     System.out.println();
-//                    myWriter.write("\n");
                     body += "\n";
                 }
 

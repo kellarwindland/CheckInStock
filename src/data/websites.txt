@@ -6,3 +6,7 @@ MicroCenter, 3080
 https://www.microcenter.com/search/search_results.aspx?Ntt=GeForce+RTX+3080&Ntk=all&sortby=match&N=4294966937+4294822454&myStore=false
 MicroCenter, 3090
 https://www.microcenter.com/search/search_results.aspx?Ntt=GeForce+RTX+3090&Ntk=all&sortby=match&N=4294822454+4294966937&myStore=false
+Best Buy, 3080
+https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&acampID=0&id=pcat17071&iht=y&irclickid=x8jy0YUJZxyLRoT07OwzdzZ-UkEX%3AOWXN1wQyA0&irgwc=1&keys=keys&ks=960&list=n&loc=Narrativ&mpid=376373&qp=gpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203080&ref=198&sc=Global&st=rtx%203080%20founder&type=page&usc=All%20Categories
+Best Buy, 3090
+https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&id=pcat17071&iht=y&keys=keys&ks=960&list=n&qp=gpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203090&sc=Global&st=rtx%203090%20founders&type=page&usc=All%20Categories
